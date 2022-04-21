@@ -29,6 +29,30 @@ var requestHandler = function(request, response) {
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
+  const method = request.method;
+  const url = request.url;
+
+  //   var sendResponse = (statusCode, response) => {
+  //   }
+  //   response.statusCode = 500;
+  //   response.setHeader("Content-Type", "text/plain");
+  //   response.end("Sorry, internal error");
+  // } else {
+  //   response.statusCode = statusCode;
+  //   response.setHeader("Content-Type", "text/html");
+  //   response.end(data);
+  // }
+
+  if (method === 'GET') {
+    if (url === '/classes/messages') {
+      sendResponse('index.html', 200, response);
+    } else if (url === '/about.html') {
+      sendResponse('about.html', 200, response);
+    } else {
+      sendResponse('404.html', 404, response);
+    }
+  }
+
   // The outgoing status.
   var statusCode = 200;
 
