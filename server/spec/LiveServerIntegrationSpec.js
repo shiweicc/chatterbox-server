@@ -73,5 +73,47 @@ describe('server', function() {
     });
   });
 
+  it('should accept POST requests to /classes/messages', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Mary',
+        text: 'Let\'s party!'}
+    };
+
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(201);
+      done();
+    });
+  });
+
+  it('should respond with messages that were previously and currently posted', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Mary',
+        text: 'Let\'s party!'}
+    };
+
+    request(requestParams, function(error, response, body) {
+      // Now if we request the log, that message we posted should be there:
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        var messages = JSON.parse(body).results;
+        expect(messages[3].username).to.equal('Mary');
+        expect(messages[3].text).to.equal('Let\'s party!');
+        expect(messages[2].username).to.equal('Mary');
+        expect(messages[2].text).to.equal('Let\'s party!');
+        done();
+      });
+    });
+  });
+
+  it('should dynamically save posted data in the body', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      var messages = JSON.parse(body).results;
+      expect(messages.length).to.equal(4);
+      done();
+    });
+  });
 
 });
