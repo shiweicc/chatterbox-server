@@ -103,4 +103,43 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
+  it('Should 404 when asked for a nonexistent method', function() {
+    var req = new stubs.request('/arglebargle', 'DELETE');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(404);
+    expect(res._ended).to.equal(true);
+  });
+
+
+  it('Should respond with messages with more info that were previously posted', function() {
+    var stubMsg = {
+      username: 'Mike',
+      text: 'What is going on!',
+      room: 'Lobby'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(201);
+
+    // Now if we request the log for that room the message we posted should be there:
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data).results;
+    expect(messages.length).to.be.above(0);
+    expect(messages[2].username).to.equal('Mike');
+    expect(messages[2].text).to.equal('What is going on!');
+    expect(messages[2].room).to.equal('Lobby');
+    expect(res._ended).to.equal(true);
+  });
+
 });

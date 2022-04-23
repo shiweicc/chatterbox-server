@@ -34,7 +34,11 @@ const requestHandler = function(request, response) {
   headers['Content-Type'] = 'application/json';
 
 
-  if (method === 'GET' && url === '/classes/messages') {
+  if (method === 'OPTIONS' && url === '/classes/messages') {
+    response.writeHead(200, headers);
+    response.end('OK!');
+
+  } else if (method === 'GET' && url === '/classes/messages') {
     response.writeHead(200, headers);
     response.end(JSON.stringify(responseObj));
 
@@ -50,7 +54,6 @@ const requestHandler = function(request, response) {
       response.writeHead(201, headers);
       response.end();
     });
-
 
   } else {
     response.writeHead(404, headers);
