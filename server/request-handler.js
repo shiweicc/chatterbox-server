@@ -6,7 +6,7 @@ You'll have to figure out a way to export this function from
 this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 **************************************************************/
-const querystring = require ('querystring');
+const urlParser = require ('url');
 const responseObj = {results: []};
 
 
@@ -26,19 +26,15 @@ const requestHandler = function(request, response) {
     'access-control-max-age': 10 // Seconds.
   };
 
-  console.log('Serving request type ' + request.method + ' for url ' + request.url);
   const method = request.method;
-  const url = request.url;
+  const url = urlParser.parse(request.url).pathname;
+  console.log('Serving request type ' + request.method + ' for url ' + url);
 
   let headers = defaultCorsHeaders;
   headers['Content-Type'] = 'application/json';
 
 
-  if (method === 'OPTIONS' && url === '/classes/messages') {
-    response.writeHead(200, headers);
-    response.end('OK!');
-
-  } else if (method === 'GET' && url === '/classes/messages') {
+  if (method === 'GET' && url === '/classes/messages') {
     response.writeHead(200, headers);
     response.end(JSON.stringify(responseObj));
 
@@ -54,6 +50,10 @@ const requestHandler = function(request, response) {
       response.writeHead(201, headers);
       response.end();
     });
+
+  } else if (method === 'OPTIONS' && url === '/classes/messages') {
+    response.writeHead(200, headers);
+    response.end('OK!');
 
   } else {
     response.writeHead(404, headers);
